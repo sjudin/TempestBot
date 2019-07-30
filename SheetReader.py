@@ -9,18 +9,8 @@ client = gspread.authorize(creds)
 doc = client.open_by_url('https://docs.google.com/spreadsheets/d/1n3PlGK2lqQYJng2PTO9MBuiVnqzP8RigzzooCOiZHYw/edit#gid=64379218')
 
 sheets = doc.worksheets()
+# Assumes that the current sheet is the second to last one TODO: Make it more robust
 sheet = sheets[-2]
-
-thur = sheet.find("Thursday")
-thur_col = sheet.get_all_values()
-
-thur_col = thur_col[2:-1]
-
-test = [item for item in thur_col if 'Social' not in item[0]]
-
-#for x in test:
-#    print(x[0]) 
-
 
 
 def get_not_set_raiders():
@@ -33,12 +23,10 @@ def get_not_set_raiders():
 
     all_raiders = [r for r in sheet.get_all_values()[2:-1] if '(Social)' not in r[0]]
 
-    # Check if raider has set thursday and sunday
-    #print(thur.col)
-
+    # Create list of raiders that have not set thursday and sunday
     not_set_raiders = [r for r in all_raiders if r[thur.col-1] == 'Not Set' or r[sun.col-1] == 'Not Set']
 
-    
+    # Return list of names for all raiders who have not set attendance
     return [x[0] for x in not_set_raiders]
 
 
