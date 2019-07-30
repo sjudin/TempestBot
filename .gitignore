@@ -1,0 +1,7 @@
+venv/
+TOKEN.py
+*.swp
+*.*~
+*.pyc
+service.json
+__pycache__/
