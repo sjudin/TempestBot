@@ -13,14 +13,7 @@ class TempestBot(object):
         # self.CHANNEL_ID = 527183820382797824 Raid disc
         self.bot = commands.Bot(command_prefix=".")
 
-        loop = asyncio.get_event_loop()
-
-        self.bot.loop.create_task(send_attendance_message_task())
         # Wait until bot is started
-        print("test")
-        loop.run_until_complete(asyncio.gather(
-                                self.wait_until_ready(),
-                                self.bot.start(TOKEN)))
         print("test")
 
     async def wait_until_ready(self):
