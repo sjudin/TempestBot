@@ -7,8 +7,8 @@ import asyncio
 import datetime
 
 client = commands.Bot(command_prefix=".")
-CHANNEL_ID = 527183820382797824 # Tempest raid-discussion
-# CHANNEL_ID = 605728010661789698 # Testing channel
+# CHANNEL_ID = 527183820382797824 # Tempest raid-discussion
+CHANNEL_ID = 605728010661789698 # Testing channel
 
 
 @client.event
@@ -61,4 +61,5 @@ async def send_attendance_message(not_set_raiders):
 
 
 client.loop.create_task(attendance_msg_task())
+print("Test")
 client.run(TOKEN)

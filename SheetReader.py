@@ -1,20 +1,19 @@
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 
-# use creds to create a client to interact with the Google Drive API
-scope = ['https://spreadsheets.google.com/feeds']
-creds = ServiceAccountCredentials.from_json_keyfile_name('service.json', scope)
-client = gspread.authorize(creds)
-
-doc = client.open_by_url('https://docs.google.com/spreadsheets/d/1n3PlGK2lqQYJng2PTO9MBuiVnqzP8RigzzooCOiZHYw/edit#gid=64379218')
-
-sheets = doc.worksheets()
-# Assumes that the current sheet is the second to last one TODO: Make it more robust
-sheet = sheets[-2]
-
-
 def get_not_set_raiders():
-    # Returns a list of raiders who have not set their Thursday and Sunday statuses yet
+    # use creds to create a client to interact with the Google Drive API
+    scope = ['https://spreadsheets.google.com/feeds']
+    creds = ServiceAccountCredentials.from_json_keyfile_name('service.json', scope)
+    client = gspread.authorize(creds)
+
+    doc = client.open_by_url('https://docs.google.com/spreadsheets/d/1n3PlGK2lqQYJng2PTO9MBuiVnqzP8RigzzooCOiZHYw/edit#gid=64379218')
+
+    sheets = doc.worksheets()
+    # Assumes that the current sheet is the second to last one TODO: Make it more robust
+    sheet = sheets[-2]
+
+   # Returns a list of raiders who have not set their Thursday and Sunday statuses yet
     #
 
     # Find locations of mandatory raid signups
@@ -28,6 +27,10 @@ def get_not_set_raiders():
 
     # Return list of names for all raiders who have not set attendance
     return [x[0] for x in not_set_raiders]
+
+
+if __name__ == '__main__':
+    print(get_not_set_raiders())
 
 
 
