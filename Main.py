@@ -15,14 +15,23 @@ CHANNEL_ID = 605728010661789698 # Testing channel
 async def on_ready():
     print(client.user.name)
     print(client.user.id)
-    await 
+
+    channel = client.get_channel(CHANNEL_ID)
+    await channel.send('TempestBot is now alive!')
 
 @client.event
 async def on_message(message):
     await client.wait_until_ready()
 
     channel = client.get_channel(CHANNEL_ID)
-    if message.author == client.user or message.content != '.Attendance':
+
+    if message.author == client.user:
+        return
+
+    if message.content == '.Ping':
+        await channel.send('Yes I am alive!')
+
+    if message.content != '.Attendance':
         return
 
     not_set_raiders = get_not_set_raiders()
@@ -39,8 +48,8 @@ async def attendance_msg_task():
         weekday = datetime.datetime.now().weekday()
         # Remind on mondays, tuesdays and wednesdays
         if weekday in [0, 1, 2]:
-            await send_attendance_message(not_set_raiders)
             await asyncio.sleep(43200)
+            await send_attendance_message(not_set_raiders)
             continue
 
 
@@ -59,8 +68,9 @@ async def send_attendance_message(not_set_raiders):
 
     await channel.send('Currently missing signups from these people for this reset:')
     await channel.send(', '.join([ r.mention for r in members]))
+    await channel.send('https://tenor.com/view/shame-go-t-game-of-thrones-walk-of-shame-shameful-gif-4949558')
+
 
 
 client.loop.create_task(attendance_msg_task())
-print("Test")
 client.run(TOKEN)
