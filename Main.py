@@ -31,11 +31,13 @@ async def on_message(message):
         if message.content == '.Ping':
             await message.author.send('Yes I am alive!')
             await message.author.send('Currently running on server {0}'.format(channel.guild))
+            await message.author.send('Output from current not set raiders: {0}'.format(get_not_set_raiders()))
             return
 
         if message.content == '.Log':
             proc = subprocess.check_output(['sudo', 'systemctl', 'status', 'TempestBot.service'])
             await message.author.send('stdout:\n{0}\n----------\n----------'.format(proc.decode('utf-8')))
+            return
 
 
     if message.content != '.Attendance':
@@ -77,7 +79,6 @@ async def send_attendance_message(not_set_raiders):
 
     await channel.send('Currently missing signups from these people for this reset:')
     await channel.send(', '.join([ r.mention for r in members]))
-
 
 
 client.loop.create_task(attendance_msg_task())
