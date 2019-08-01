@@ -5,19 +5,18 @@ import time
 from SheetReader import get_not_set_raiders
 import asyncio
 import datetime
+import subprocess
 
 client = commands.Bot(command_prefix=".")
-# CHANNEL_ID = 527183820382797824 # Tempest raid-discussion
-CHANNEL_ID = 605728010661789698 # Testing channel
+CHANNEL_ID = 527183820382797824 # Tempest raid-discussion
+# CHANNEL_ID = 605728010661789698 # Testing channel
 
 
 @client.event
 async def on_ready():
     print(client.user.name)
     print(client.user.id)
-
-    channel = client.get_channel(CHANNEL_ID)
-    await channel.send('TempestBot is now alive!')
+    await client.get_user(496028306232049694).send('TempestBot has started')
 
 @client.event
 async def on_message(message):
@@ -28,8 +27,18 @@ async def on_message(message):
     if message.author == client.user:
         return
 
-    if message.content == '.Ping':
-        await channel.send('Yes I am alive!')
+    if message.author.id == 496028306232049694:
+        if message.content == '.Ping':
+            await message.author.send('Yes I am alive!')
+            await message.author.send('Currently running on server {0}'.format(channel.guild))
+            return
+
+        if message.content == '.Log':
+            proc = subprocess.Popen(['sudo', 'systemctl', 'status', 'TempestBot.service'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            stdout, stderr = proc.communicate()
+            await message.author.send('stdout:\n{0}\n----------\n----------'.format(stdout))
+            await message.author.send('stderr:\n{0}\n----------\n----------'.format(stderr))
+
 
     if message.content != '.Attendance':
         return
@@ -43,12 +52,14 @@ async def on_message(message):
     await send_attendance_message(not_set_raiders)
 
 async def attendance_msg_task():
-    not_set_raiders = get_not_set_raiders()
-    while True:
+    await client.wait_until_ready()
+
+    while not client.is_closed:
         weekday = datetime.datetime.now().weekday()
         # Remind on mondays, tuesdays and wednesdays
         if weekday in [0, 1, 2]:
             await asyncio.sleep(43200)
+            not_set_raiders = get_not_set_raiders()
             await send_attendance_message(not_set_raiders)
             continue
 
@@ -68,7 +79,6 @@ async def send_attendance_message(not_set_raiders):
 
     await channel.send('Currently missing signups from these people for this reset:')
     await channel.send(', '.join([ r.mention for r in members]))
-    await channel.send('https://tenor.com/view/shame-go-t-game-of-thrones-walk-of-shame-shameful-gif-4949558')
 
 
 
