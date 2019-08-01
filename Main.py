@@ -34,10 +34,8 @@ async def on_message(message):
             return
 
         if message.content == '.Log':
-            proc = subprocess.Popen(['sudo', 'systemctl', 'status', 'TempestBot.service'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            stdout, stderr = proc.communicate()
-            await message.author.send('stdout:\n{0}\n----------\n----------'.format(stdout))
-            await message.author.send('stderr:\n{0}\n----------\n----------'.format(stderr))
+            proc = subprocess.check_output(['sudo', 'systemctl', 'status', 'TempestBot.service'])
+            await message.author.send('stdout:\n{0}\n----------\n----------'.format(proc.decode('utf-8')))
 
 
     if message.content != '.Attendance':
