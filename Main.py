@@ -6,10 +6,11 @@ from SheetReader import get_not_set_raiders
 import asyncio
 import datetime
 import subprocess
+from datetime import datetime
 
 client = commands.Bot(command_prefix=".")
 CHANNEL_ID = 527183820382797824 # Tempest raid-discussion
-# CHANNEL_ID = 605728010661789698 # Testing channel
+#CHANNEL_ID = 605728010661789698 # Testing channel
 
 
 @client.event
@@ -40,7 +41,8 @@ async def on_message(message):
             return
 
 
-    if message.content != '.Attendance':
+
+    if message.content.lower() != '.attendance':
         return
 
     not_set_raiders = get_not_set_raiders()
@@ -54,15 +56,20 @@ async def on_message(message):
 async def attendance_msg_task():
     await client.wait_until_ready()
 
-    while not client.is_closed:
-        weekday = datetime.datetime.now().weekday()
+    # Times when to notify
+    notification_times = ['09:00','15:00','21:00']
+    channel = client.get_channel(CHANNEL_ID)
+
+    while not client.is_closed():
+        weekday = datetime.now().weekday()
+        now = datetime.strftime(datetime.now(), '%H:%M')
         # Remind on mondays, tuesdays and wednesdays
-        if weekday in [0, 1, 2]:
-            await asyncio.sleep(43200)
+        if weekday in [0, 1, 2] and now in notification_times:
             not_set_raiders = get_not_set_raiders()
             await send_attendance_message(not_set_raiders)
-            continue
-
+            await asyncio.sleep(90)
+        else:
+            await asyncio.sleep(1)
 
 async def send_attendance_message(not_set_raiders):
     await client.wait_until_ready()
