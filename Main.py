@@ -20,9 +20,13 @@ class TempestBot(commands.Bot):
         self.notification_times = ['09:00','15:00','21:00']
         self.notification_days = [0, 1, 2]
 
+        # Loriell, Ryndaris, Demia, Sugi, Vanaroth, Klashgora
+        self.trusted_ids = [496028306232049694, 180084840950005760, 137153880839553024, 136459243359436800, 219492968564785154, 442729218342780957]
+
 
 #client = commands.Bot(command_prefix='.', case_insensitivte=True)
 client = TempestBot(command_prefix='.', case_insensitive=True)
+#client.remove_command('help')
 CHANNEL_ID = client.CHANNEL_ID
 
 cogs = ['Cogs']
@@ -31,6 +35,7 @@ cogs = ['Cogs']
 async def on_ready():
     print(client.user.name)
     print(client.user.id)
+
 
     for cog in cogs:
         client.load_extension(cog)
@@ -41,6 +46,20 @@ async def on_ready():
 
     await client.get_user(496028306232049694).send('TempestBot has started')
 
+
+
+#@client.command(
+#        name='help',
+#        description='The help command',
+#        aliases=['commands', 'command']
+#        )
+async def help_command(ctx):
+    embed = discord.Embed(colour = discord.Colour.orange())
+    embed.set_author(name='Help')
+
+    embed.add_field(name='.ping', values='pings bot to see if its alive. returns some information to test that bot is still working properly.')
+
+    await ctx.send()
 
 if __name__ == '__main__':
 #    client.loop.create_task(attendance_msg_task())

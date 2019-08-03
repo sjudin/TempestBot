@@ -1,5 +1,4 @@
-- add features so that admins can change sheduling of bot // WIP
-- add help tag text
+- add features so that admins can change sheduling of bot // Done
+- add help tag text // Done
 - add command to see if attendance_task is still running
 - comment code
-- add more clarity to the TempestBot instance
