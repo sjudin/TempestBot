@@ -14,10 +14,6 @@ trusted_ids = [496028306232049694, 180084840950005760, 137153880839553024, 13645
 
 help = Helptexts()
 
-# Checks that Attendance command can only be called from raid-discussion or from users with trusted_ids
-def check_if_dm_or_channel(ctx):
-    return ctx.channel == CHANNEL_ID or ctx.author.id in trusted_ids
-
 # Admin commands
 def check_if_trusted_ids(ctx):
     return ctx.author.id in trusted_ids
@@ -76,20 +72,23 @@ class Attendance(commands.Cog):
             proc = subprocess.check_output(['sudo', 'systemctl', 'status', 'TempestBot.service'])
             await ctx.send('stdout:\n{0}\n----------\n----------'.format(proc.decode('utf-8')))
 
+    @commands.command(name='Repo', help='Link to repository for this bot')
+    async def repo_command(self, ctx):
+        await ctx.send('https://github.com/sjudin/TempestBot')
 
-    @commands.command(name='Attendance', help='Lists attendance from all raiders. This command can be called by anyone but must be from the #raid-discussion channel.\n\
-                                               Officers can DM this command to the bot and it will show up in #raid-discussion aswell.')
-    @commands.check(check_if_dm_or_channel)
+
+    @commands.command(name='Attendance', help=help.Attendance)
+    @commands.check(check_if_trusted_ids)
     async def attendance_command(self, ctx):
-        not_set_raiders = get_not_set_raiders()
+        not_set_raiders, sheet_title = get_not_set_raiders()
         if not not_set_raiders:
             await ctx.send('All raiders are signed for this reset, good job!')
             return
 
-        await self.send_attendance_message(ctx, not_set_raiders)
+        await self.send_attendance_message(ctx, not_set_raiders, sheet_title)
 
 
-    async def send_attendance_message(self, ctx, not_set_raiders):
+    async def send_attendance_message(self, ctx, not_set_raiders, sheet_title):
         await self.client.wait_until_ready()
         members = list()
 
@@ -103,7 +102,7 @@ class Attendance(commands.Cog):
             if not not_set_raiders:
                 return
 
-            await self.client.channel.send('Currently missing signups from these people for this reset:')
+            await self.client.channel.send('Currently missing {} from these people:'.format(sheet_title))
             try:
                 await self.client.channel.send(', '.join([ r.mention for r in members]))
             except(discord.HTTPException):
@@ -122,11 +121,11 @@ class Attendance(commands.Cog):
                 await self.client.channel.send('All raiders have signed up for this reset, good job!')
                 return
 
-            await ctx.send('Currently missing signups from these people for this reset:')
+            await ctx.send('Currently missing {} from these people:'.format(sheet_title))
             await ctx.send(', '.join([ r.mention for r in members]))
 
         except(AttributeError) as e:
-            await self.client.channel.send('Currently missing signups from these people for this reset:')
+            await self.client.channel.send('Currently missing {} from these people:'.format(sheet_title))
             await self.client.channel.send('Could not find a guild, printing output from not_set_raiders: {}'.format(not_set_raiders))
 
 
@@ -136,8 +135,8 @@ class Attendance(commands.Cog):
         now = datetime.strftime(datetime.now(), '%H:%M')
         # Remind on mondays, tuesdays and wednesdays
         if weekday in self.client.notification_days and now in self.client.notification_times:
-            not_set_raiders = get_not_set_raiders()
-            await self.send_attendance_message(ctx=None, not_set_raiders=not_set_raiders)
+            not_set_raiders, sheet_title = get_not_set_raiders()
+            await self.send_attendance_message(ctx=None, not_set_raiders=not_set_raiders, sheet_title=sheet_title)
 
     @attendance_msg_task.before_loop
     async def wait_for_bot(self):

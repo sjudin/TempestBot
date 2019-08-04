@@ -8,6 +8,7 @@ class Helptexts:
         self.changeDays = 'Changes the current days when notifications should be sent. Dates should be integers from 0-6 that represent the days of the week. Example usage:\n.changeDays 1 2 3\n\nThis will notify on tue/wed/thur'
 
         self.Log = 'Sends log information from systemctl service on Raspberry. Mostly used by Loriell for logging purposes.'
+        self.Attendance = 'Lists attendance from all raiders. This command can be called by anyone but must be from the #raid-discussion channel.\n\n Officers can DM this command to the bot and it will show up in #raid-discussion aswell.'
 
 
 

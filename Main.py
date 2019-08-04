@@ -46,21 +46,6 @@ async def on_ready():
 
     await client.get_user(496028306232049694).send('TempestBot has started')
 
-
-
-#@client.command(
-#        name='help',
-#        description='The help command',
-#        aliases=['commands', 'command']
-#        )
-async def help_command(ctx):
-    embed = discord.Embed(colour = discord.Colour.orange())
-    embed.set_author(name='Help')
-
-    embed.add_field(name='.ping', values='pings bot to see if its alive. returns some information to test that bot is still working properly.')
-
-    await ctx.send()
-
 if __name__ == '__main__':
 #    client.loop.create_task(attendance_msg_task())
     client.run(TOKEN)
