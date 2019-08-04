@@ -12,6 +12,7 @@ def get_not_set_raiders():
     sheets = doc.worksheets()
     # Assumes that the current sheet is the second to last one TODO: Make it more robust
     sheet = sheets[-2]
+    print(sheet.title)
 
    # Returns a list of raiders who have not set their Thursday and Sunday statuses yet
     #
@@ -26,11 +27,12 @@ def get_not_set_raiders():
     not_set_raiders = [r for r in all_raiders if r[thur.col-1] == 'Not Set' or r[sun.col-1] == 'Not Set']
 
     # Return list of names for all raiders who have not set attendance
-    return [x[0] for x in not_set_raiders]
+    return ([x[0] for x in not_set_raiders], sheet.title)
 
 
 if __name__ == '__main__':
-    print(get_not_set_raiders())
+    names, title = get_not_set_raiders()
+    print(names, title)
 
 
 

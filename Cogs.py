@@ -3,6 +3,7 @@ import datetime
 import subprocess
 import asyncio
 import time
+from Helptexts import Helptexts
 
 from discord.ext import tasks, commands
 from SheetReader import get_not_set_raiders
@@ -10,6 +11,8 @@ from Main import CHANNEL_ID
 from datetime import datetime
 
 trusted_ids = [496028306232049694, 180084840950005760, 137153880839553024, 136459243359436800, 219492968564785154, 442729218342780957]
+
+help = Helptexts()
 
 # Checks that Attendance command can only be called from raid-discussion or from users with trusted_ids
 def check_if_dm_or_channel(ctx):
@@ -24,7 +27,7 @@ class Attendance(commands.Cog):
         self.client = client
         self.attendance_msg_task.start()
 
-    @commands.command(name='Ping', help='Pings bot to see if it is alive, it will return some info about its current status')
+    @commands.command(name='Ping', help=help.Ping)
     @commands.check(check_if_trusted_ids)
     async def ping_command(self, ctx):
         if ctx.author.id in self.client.trusted_ids:
@@ -33,8 +36,7 @@ class Attendance(commands.Cog):
             await ctx.send('Bot is currently set to ping at days {}. Type .changeDays to change this'.format(', '.join([str(a) for a in self.client.notification_days])))
             await ctx.send('Output from current not set raiders: {0}'.format(get_not_set_raiders()))
 
-    @commands.command(name='changeTimes', help='Changes the current times when notifications should be sent. \
-                    Times should be on HH:MM format and separated by spaces. Example usage:\n.changeTimes 09:00 12:00 15:00')
+    @commands.command(name='changeTimes', help=help.changeTimes)
     @commands.check(check_if_trusted_ids)
     async def change_times_command(self, ctx, *args):
         try:
@@ -47,8 +49,7 @@ class Attendance(commands.Cog):
         self.client.notification_times = [datetime.strptime(arg, '%H:%M').strftime('%H:%M') for arg in args]
         await ctx.send('Notification times were changed. New times are: {}'.format(', '.join(self.client.notification_times)))
 
-    @commands.command(name='changeDays', help='Changes the current days when notifications should be sent. \
-                    dates should be integers from 0-6 that represent the days of the week. Example usage:\n.changeDays 1 2 3\n\nThis will notify on tue/wed/thur')
+    @commands.command(name='changeDays', help=help.changeDays)
     @commands.check(check_if_trusted_ids)
     async def change_days_command(self, ctx, *args):
         new_notification_days = list()
@@ -68,7 +69,7 @@ class Attendance(commands.Cog):
         await ctx.send('Notification days were changed. New days are: {}'.format(', '.join([str(a) for a in self.client.notification_days])))
 
 
-    @commands.command(name='Log', help='Sends log information from systemctl service on Raspberry. Mostly used by Loriell for logging purposes.')
+    @commands.command(name='Log', help=help.Log)
     @commands.check(check_if_trusted_ids)
     async def log_command(self, ctx):
         if ctx.author.id in self.client.trusted_ids:

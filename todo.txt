@@ -2,3 +2,5 @@
 - add help tag text // Done
 - add command to see if attendance_task is still running
 - comment code
+- Improve scheduling to set absolute dates and times for execution
+- Add date range to message sent with .attendance
