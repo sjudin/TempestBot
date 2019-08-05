@@ -100,7 +100,7 @@ class Attendance(commands.Cog):
 
     @commands.command(name='Log', help=help.Log)
     @commands.check(check_if_trusted_ids)
-    async def log_command(self, ctx, arg):
+    async def log_command(self, ctx, arg: int):
         if ctx.author.id in self.client.trusted_ids:
             proc = subprocess.check_output(['sudo', 'journalctl', '-u', 'TempestBot.service', '-n', arg])
             await ctx.send('stdout:\n{0}\n----------\n----------'.format(proc.decode('utf-8')))
