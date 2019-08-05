@@ -2,10 +2,11 @@ import discord
 import datetime
 import subprocess
 import asyncio
+import aioschedule as schedule
 import time
-from Helptexts import Helptexts
 
 from discord.ext import tasks, commands
+from Helptexts import Helptexts
 from SheetReader import get_not_set_raiders
 from Main import CHANNEL_ID
 from datetime import datetime
@@ -21,8 +22,25 @@ def check_if_trusted_ids(ctx):
 class Attendance(commands.Cog):
     def __init__(self, client):
         self.client = client
-        self.attendance_msg_task.start()
 
+        # Initialize jobs
+        for day in self.client.notification_days:
+            for time in self.client.notification_times:
+                s = self.days_dict(day, time)
+                if s is not None:
+                    s.do(self.attendance_msg_task)
+
+    async def attendance_msg_task(self):
+        not_set_raiders, sheet_title = get_not_set_raiders()
+        await self.send_attendance_message(ctx=None, not_set_raiders=not_set_raiders, sheet_title=sheet_title)
+
+    @commands.command(name='Jobs', help='Returns current jobs from aioschedule')
+    @commands.check(check_if_trusted_ids)
+    async def jobs_command(self, ctx):
+        embed = discord.Embed(title='Jobs')
+        [embed.add_field(name='Job', value=job) for job in self.client.scheduler.jobs]
+        await ctx.send(embed=embed)
+    
     @commands.command(name='Ping', help=help.Ping)
     @commands.check(check_if_trusted_ids)
     async def ping_command(self, ctx):
@@ -35,14 +53,22 @@ class Attendance(commands.Cog):
     @commands.command(name='changeTimes', help=help.changeTimes)
     @commands.check(check_if_trusted_ids)
     async def change_times_command(self, ctx, *args):
+        import time
         try:
             for arg in args:
                 val = time.strptime(arg, '%H:%M')
-        except(ValueError):
-            await ctx.send('Input was not correct, should be a list of times on the format HH:MM separated by spaces\nExample: 09:00 18:00 21:00')
+        except(ValueError) as e:
+            await ctx.send('Input was not correct, should be a list of times on the format HH:MM in range 00:00 - 23:59 separated by spaces\nExample: 09:00 18:00 21:00\nnote that 24:00 should be 00:00')
             return
         # All times are valid, set new times
         self.client.notification_times = [datetime.strptime(arg, '%H:%M').strftime('%H:%M') for arg in args]
+        self.client.scheduler.clear()
+
+        for day in self.client.notification_days:
+            for time in self.client.notification_times:
+                s = self.days_dict(day, time)
+                if s is not None:
+                    s.do(self.attendance_msg_task)
         await ctx.send('Notification times were changed. New times are: {}'.format(', '.join(self.client.notification_times)))
 
     @commands.command(name='changeDays', help=help.changeDays)
@@ -52,16 +78,23 @@ class Attendance(commands.Cog):
 
         try:
             for a in args:
-                    if int(a) < 0 or int(a) > 6:
-                        raise ValueError
-
-                    new_notification_days.append(int(a))
+                if int(a) < 0 or int(a) > 6:
+                    raise ValueError
+                new_notification_days.append(int(a))
 
         except(ValueError):
             await ctx.send('Input was not correct, should be numbers between 0-6 that represent days of the week separated by spaces\nExample: 0 1 2\nCorresponds to Mon-tue-wed')
             return
 
         self.client.notification_days = new_notification_days
+        # Reschedule tasks to new times
+        self.client.scheduler.clear()
+        for day in self.client.notification_days:
+            for time in self.client.notification_times:
+                s = self.days_dict(day, time)
+                if s is not None:
+                    s.do(self.attendance_msg_task)
+
         await ctx.send('Notification days were changed. New days are: {}'.format(', '.join([str(a) for a in self.client.notification_days])))
 
 
@@ -128,20 +161,24 @@ class Attendance(commands.Cog):
             await self.client.channel.send('Currently missing {} from these people:'.format(sheet_title))
             await self.client.channel.send('Could not find a guild, printing output from not_set_raiders: {}'.format(not_set_raiders))
 
-
-    @tasks.loop(minutes=1.0)
-    async def attendance_msg_task(self):
-        weekday = datetime.now().weekday()
-        now = datetime.strftime(datetime.now(), '%H:%M')
-        # Remind on mondays, tuesdays and wednesdays
-        if weekday in self.client.notification_days and now in self.client.notification_times:
-            not_set_raiders, sheet_title = get_not_set_raiders()
-            await self.send_attendance_message(ctx=None, not_set_raiders=not_set_raiders, sheet_title=sheet_title)
-
-    @attendance_msg_task.before_loop
-    async def wait_for_bot(self):
-        await self.client.wait_until_ready()
-
+    def days_dict(self, day, time):
+        # function that add new jobs to scheduler
+        # given a day (int: 0-6) and a time (string: 00:00-23:59)
+        days = {
+                0: self.client.scheduler.every().monday.at(time),
+                1: self.client.scheduler.every().tuesday.at(time),
+                2: self.client.scheduler.every().wednesday.at(time),
+                3: self.client.scheduler.every().thursday.at(time),
+                4: self.client.scheduler.every().friday.at(time),
+                5: self.client.scheduler.every().saturday.at(time),
+                6: self.client.scheduler.every().sunday.at(time),
+                }
+        try:
+            return days[day]
+        except(KeyError) as e:
+            return None
 
 def setup(client):
     client.add_cog(Attendance(client))
+
+
