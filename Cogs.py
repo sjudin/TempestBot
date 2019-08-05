@@ -102,8 +102,14 @@ class Attendance(commands.Cog):
     @commands.check(check_if_trusted_ids)
     async def log_command(self, ctx, arg: int):
         if ctx.author.id in self.client.trusted_ids:
-            proc = subprocess.check_output(['sudo', 'journalctl', '-u', 'TempestBot.service', '-n', arg])
-            await ctx.send('stdout:\n{0}\n----------\n----------'.format(proc.decode('utf-8')))
+            proc = subprocess.check_output(['sudo', 'journalctl', '-u', 'TempestBot.service', '-n', str(arg)])
+            output_proc = proc.decode('utf-8')
+            chunks, chuck_size = len(output_proc), len(output_proc)//2000
+
+            output = [output_proc[i:i+chunk_size] for i in range(0, chunks, chunk_size)]
+
+            for a in output:
+                await ctx.send(a)
 
     @commands.command(name='Repo', help='Link to repository for this bot')
     async def repo_command(self, ctx):
