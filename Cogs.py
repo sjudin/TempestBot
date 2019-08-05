@@ -10,6 +10,8 @@ from Helptexts import Helptexts
 from SheetReader import get_not_set_raiders
 from Main import CHANNEL_ID
 from datetime import datetime
+from io import StringIO
+from functools import partial
 
 trusted_ids = [496028306232049694, 180084840950005760, 137153880839553024, 136459243359436800, 219492968564785154, 442729218342780957]
 
@@ -104,9 +106,7 @@ class Attendance(commands.Cog):
         if ctx.author.id in self.client.trusted_ids:
             proc = subprocess.check_output(['sudo', 'journalctl', '-u', 'TempestBot.service', '-n', str(arg)])
             output_proc = proc.decode('utf-8')
-            chunks, chuck_size = len(output_proc), len(output_proc)//2000
-
-            output = [output_proc[i:i+chunk_size] for i in range(0, chunks, chunk_size)]
+            output = [l for l in iter(partial(StringIO(output_proc).read, 2000), '')]
 
             for a in output:
                 await ctx.send(a)
