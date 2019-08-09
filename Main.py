@@ -37,7 +37,7 @@ class TempestBot(commands.Bot):
 
 client = TempestBot(command_prefix='.', case_insensitive=True)
 CHANNEL_ID = client.CHANNEL_ID
-cogs = ['Cogs']
+cogs = ['Cogs.AttendanceCog', 'Cogs.AssignmentsCog']
 
 @client.event
 async def on_ready():
