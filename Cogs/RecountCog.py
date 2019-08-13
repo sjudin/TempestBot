@@ -96,7 +96,6 @@ class Recount(commands.Cog):
         for i, v in enumerate(values):
             hps = v/healers['Duration']
             percent = 100*v/total_healing
-            print(hps, percent)
 
             name_text = ax.text(0, i - i*0.2, '  {}'.format(names[i]), color='white',
                     weight='heavy', va='center')
@@ -115,9 +114,9 @@ class Recount(commands.Cog):
         plt.ylim(-0.4, names_pos[-1]+.4)
 
         plt.ioff()
-        plt.savefig('log.png')
+        plt.savefig('log.png', bbox_inches='tight')
 
-        # await message.edit(content = healers)
+        await message.edit(content = recount_data['FoughtWho'][0])
         await ctx.send(file=discord.File('log.png'))
 
 
