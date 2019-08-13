@@ -5,3 +5,5 @@ TOKEN.py
 *.pyc
 service.json
 __pycache__/
+assignments/*
+log.png
