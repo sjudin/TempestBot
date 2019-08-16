@@ -119,7 +119,7 @@ class Recount(commands.Cog):
 
             name_text = ax.text(0, i - i*0.2, '  {}'.format(names[i]), color='white',
                     weight='heavy', va='center')
-            healing_text = ax.text(max(overhealing) + values[-1], i - i*0.2, '{0} ({1:0.1f} , {2:0.1f}%)    OH: {3} {4:0.1f}%'.format(int(v), hps, percent, oh, 100*oh/(int(v)+oh)),
+            healing_text = ax.text(max(overhealing) + values[-1], i - i*0.2, '{0:,} ({1:0.1f} , {2:0.1f}%)    OH: {3:,} {4:0.1f}%'.format(int(v), hps, percent, oh, 100*oh/(int(v)+oh)),
                     color='white', ha='right', va='center', weight='heavy')
 
             name_text.set_path_effects([path_effects.Stroke(linewidth=2, foreground='black'),
