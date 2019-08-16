@@ -61,6 +61,12 @@ class Recount(commands.Cog):
                 unsorted_healers[_] = {}
                 unsorted_healers[_]['Class'] = player['class']
                 unsorted_healers[_]['HealingDone'] = player['Fights']['LastFightData']['Healing']
+                unsorted_healers[_]['Overhealing'] = 0
+                
+                if 'OverHeals' in player['Fights']['LastFightData']:
+                    for spell, value in player['Fights']['LastFightData']['OverHeals'].items():
+                        unsorted_healers[_]['Overhealing'] += value['amount']
+
                 total_healing = total_healing + player['Fights']['LastFightData']['Healing']
 
 
@@ -69,37 +75,51 @@ class Recount(commands.Cog):
         names = list()
         values = list()
         classes = list()
+        overhealing = list()
 
         for key, value in healers.items():
             names.append(key)
             values.append(value['HealingDone'])
             classes.append(value['Class'])
+            overhealing.append(value['Overhealing'])
 
         names = names[:log_length]
         values = values[:log_length]
         classes = classes[:log_length]
+        overhealing = overhealing[:log_length]
 
         names.reverse()
         values.reverse()
         classes.reverse()
+        overhealing.reverse()
 
         healers['Duration'] = recount_data['combatants']['Loriell']['Fights']['LastFightData']['ActiveTime']
 
         names_pos = [0, 0.8, 1.6, 2.4, 3.2, 4, 4.8, 5.6]
 
-        fig, ax = plt.subplots()
-        barlist = ax.barh(names_pos,values)
-        ax.set_facecolor('dimgrey')
+        # fig, ax = plt.subplots()
+        fig = plt.figure()
+        ax = plt.subplot(111)
+
+        for side in ['top', 'bottom', 'left', 'right']:
+            ax.spines[side].set_visible(False)
+
+        barlist_overhealing = ax.barh(names_pos,overhealing, left=values, color='dimgrey')
+        barlist_healing = ax.barh(names_pos,values)
+
+        ax.set_facecolor('grey')
+
         ax.set_yticklabels([])
         ax.set_xticklabels([])
 
         for i, v in enumerate(values):
             hps = v/healers['Duration']
             percent = 100*v/total_healing
+            oh = int(overhealing[i])
 
             name_text = ax.text(0, i - i*0.2, '  {}'.format(names[i]), color='white',
                     weight='heavy', va='center')
-            healing_text = ax.text(values[-1], i - i*0.2, '{0} ({1:0.1f} , {2:0.1f}%)'.format(int(v), hps, percent),
+            healing_text = ax.text(max(overhealing) + values[-1], i - i*0.2, '{0} ({1:0.1f} , {2:0.1f}%)    OH: {3} {4:0.1f}%'.format(int(v), hps, percent, oh, 100*oh/(int(v)+oh)),
                     color='white', ha='right', va='center', weight='heavy')
 
             name_text.set_path_effects([path_effects.Stroke(linewidth=2, foreground='black'),
@@ -107,14 +127,17 @@ class Recount(commands.Cog):
             healing_text.set_path_effects([path_effects.Stroke(linewidth=2, foreground='black'),
                                         path_effects.Normal()])
 
-        for index, bar in enumerate(barlist):
+        for index, bar in enumerate(barlist_healing):
             bar.set_color(color_dict.get(classes[index], 'r'))
+            bar.set_edgecolor('black')
+
+        for index, bar in enumerate(barlist_overhealing):
             bar.set_edgecolor('black')
          
         plt.ylim(-0.4, names_pos[-1]+.4)
 
         plt.ioff()
-        plt.savefig('log.png', bbox_inches='tight')
+        plt.savefig('log.png', bbox_inches='tight', pad_inches=0)
 
         await message.edit(content = recount_data['FoughtWho'][0])
         await ctx.send(file=discord.File('log.png'))

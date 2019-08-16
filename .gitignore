@@ -7,3 +7,4 @@ service.json
 __pycache__/
 assignments/*
 log.png
+Cogs/test.py
