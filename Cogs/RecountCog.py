@@ -38,7 +38,7 @@ class Recount(commands.Cog):
         log_length = 8
 
         f = open('E:\\WoW\\WTF\\Account\\SJUDIN\\Netherwing\\Loriell\\SavedVariables\\Recount.lua').read()
-        # subprocess.call(['cp', '/home/pi/projects/ShareFile/Recount.lua', '/home/pi/projects/TempestBot/'])
+        # subprocess.call(['cp', '/home/pi/mounts/SavedVariables/Recount.lua', '/home/pi/projects/TempestBot/'])
         # f = open('/home/pi/projects/TempestBot/Recount.lua').read()
 
         f = '{' + f.split('{', 1)[-1]
