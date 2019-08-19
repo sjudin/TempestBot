@@ -60,14 +60,17 @@ class Recount(commands.Cog):
             if(player['isFriend'] and player['isPlayer'] == 1):
                 unsorted_healers[_] = {}
                 unsorted_healers[_]['Class'] = player['class']
-                unsorted_healers[_]['HealingDone'] = player['Fights']['LastFightData']['Healing']
+                # unsorted_healers[_]['HealingDone'] = player['Fights']['LastFightData']['Healing']
+                unsorted_healers[_]['HealingDone'] = player['Fights']['LastFightData'].get('Healing', 0)
                 unsorted_healers[_]['Overhealing'] = 0
                 
                 if 'OverHeals' in player['Fights']['LastFightData']:
                     for spell, value in player['Fights']['LastFightData']['OverHeals'].items():
                         unsorted_healers[_]['Overhealing'] += value['amount']
 
-                total_healing = total_healing + player['Fights']['LastFightData']['Healing']
+                # total_healing = total_healing + player['Fights']['LastFightData']['Healing']
+                total_healing = total_healing + unsorted_healers[_]['HealingDone']
+
 
 
         healers = collections.OrderedDict(sorted(unsorted_healers.items(), key=lambda x: x[1]['HealingDone'], reverse = True))
