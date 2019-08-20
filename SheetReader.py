@@ -25,7 +25,7 @@ def get_not_set_raiders():
     # Create list of raiders that have not set thursday and sunday
     not_set_raiders = [r for r in all_raiders if r[thur.col-1] == 'Not Set' or r[sun.col-1] == 'Not Set']
 	if 'Artex' in not_set_raiders:
-    not_set_raiders.remove(99)
+    not_set_raiders.remove('Artex')
     # Return list of names for all raiders who have not set attendance
     return ([x[0] for x in not_set_raiders], sheet.title)
 
