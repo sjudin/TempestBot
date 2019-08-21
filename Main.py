@@ -43,15 +43,19 @@ cogs = ['Cogs.AttendanceCog', 'Cogs.AssignmentsCog', 'Cogs.RecountCog']
 async def on_ready():
     print(client.user.name)
     print(client.user.id)
+    print('Channel id:{}'.format(client.CHANNEL_ID))
 
-    for cog in cogs:
-        client.load_extension(cog)
+    try:
+        for cog in cogs:
+            client.load_extension(cog)
 
-    # Set this after client is ready because of threading issues
-    client.channel = client.get_channel(client.CHANNEL_ID)
-    client.admin_user = client.get_user(496028306232049694)
+        # Set this after client is ready because of threading issues
+        client.channel = client.get_channel(client.CHANNEL_ID)
+        client.admin_user = client.get_user(496028306232049694)
 
-    await client.get_user(496028306232049694).send('TempestBot has started')
+        await client.get_user(496028306232049694).send('TempestBot has started')
+    except (ExtensionNotLoaded):
+        pass
 
 if __name__ == '__main__':
     client.loop.create_task(client.timer())
