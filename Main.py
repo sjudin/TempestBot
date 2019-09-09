@@ -12,8 +12,8 @@ from SheetReader import get_not_set_raiders
 class TempestBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        #self.CHANNEL_ID = 527183820382797824 # Tempest raid-discussion
-        self.CHANNEL_ID = 605728010661789698 # Testing channel
+        self.CHANNEL_ID = 527183820382797824 # Tempest raid-discussion
+        # self.CHANNEL_ID = 605728010661789698 # Testing channel
 
         self.channel = None
         self.admin_user = None

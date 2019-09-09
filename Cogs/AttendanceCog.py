@@ -102,9 +102,9 @@ class Attendance(commands.Cog):
 
     @commands.command(name='Log', help=help.Log)
     @commands.check(check_if_trusted_ids)
-    async def log_command(self, ctx, arg: int):
+    async def log_command(self, ctx, *args):
         if ctx.author.id in self.client.trusted_ids:
-            proc = subprocess.check_output(['sudo', 'journalctl', '-u', 'TempestBot.service', '-n', str(arg)])
+            proc = subprocess.check_output(['sudo', 'journalctl', '-u', '{}.service'.format(args[0]), '-n', str(args[1])])
             output_proc = proc.decode('utf-8')
             output = [l for l in iter(partial(StringIO(output_proc).read, 2000), '')]
 
