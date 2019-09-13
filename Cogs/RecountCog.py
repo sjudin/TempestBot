@@ -104,7 +104,7 @@ class Recount(commands.Cog):
         names_pos = [0, 0.8, 1.6, 2.4, 3.2, 4, 4.8, 5.6]
 
         # fig, ax = plt.subplots()
-        fig = plt.figure(figsize=(8,6))
+        fig = plt.figure()
         ax = plt.subplot(111)
 
         for side in ['top', 'bottom', 'left', 'right']:
@@ -129,7 +129,7 @@ class Recount(commands.Cog):
 
             name_text = ax.text(0, i - i*0.2, '  {}'.format(names[i]), color='white',
                     weight='heavy', va='center')
-            healing_text = ax.text(overhealing[-1] + values[-1], i - i*0.2, '{0:,} ({1:0.1f} , {2:0.1f}%)    OH: {3:,} {4:0.1f}%  '.format(int(v), hps, percent, oh, 100*oh/(int(v)+oh)),
+            healing_text = ax.text(overhealing[-1] + values[-1], i - i*0.2, '{0:,} ({1:0.1f} , {2:0.1f}%)    OH: {3:,} {4:0.1f}%'.format(int(v), hps, percent, oh, 100*oh/(int(v)+oh)),
                     color='white', ha='right', va='center', weight='heavy')
 
             name_text.set_path_effects([path_effects.Stroke(linewidth=2, foreground='black'),
