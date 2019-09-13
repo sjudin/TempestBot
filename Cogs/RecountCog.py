@@ -3,6 +3,7 @@ import collections
 import operator
 import matplotlib.pyplot as plt
 import matplotlib.patheffects as path_effects
+import matplotlib as mpl
 import subprocess
 
 from discord.ext import tasks, commands
@@ -57,6 +58,8 @@ class Recount(commands.Cog):
         total_healing = 0
 
         for _, player in recount_data['combatants'].items():
+            if 'Fights' not in player or 'LastFightData' not in player['Fights']:
+                continue
             if(player['isFriend'] and player['isPlayer'] == 1):
                 unsorted_healers[_] = {}
                 unsorted_healers[_]['Class'] = player['class']
@@ -101,7 +104,7 @@ class Recount(commands.Cog):
         names_pos = [0, 0.8, 1.6, 2.4, 3.2, 4, 4.8, 5.6]
 
         # fig, ax = plt.subplots()
-        fig = plt.figure()
+        fig = plt.figure(figsize=(8,6))
         ax = plt.subplot(111)
 
         for side in ['top', 'bottom', 'left', 'right']:
@@ -114,6 +117,10 @@ class Recount(commands.Cog):
 
         ax.set_yticklabels([])
         ax.set_xticklabels([])
+        ax.get_xaxis().set_visible(False)
+        ax.get_yaxis().set_visible(False)
+        mpl.rcParams['savefig.pad_inches'] = 0
+
 
         for i, v in enumerate(values):
             hps = v/healers['Duration']
