@@ -120,7 +120,8 @@ class Recount(commands.Cog):
         ax.get_xaxis().set_visible(False)
         ax.get_yaxis().set_visible(False)
         mpl.rcParams['savefig.pad_inches'] = 0
-
+        
+        OH_placement = max([sum(x) for x in zip(overhealing, values)])
 
         for i, v in enumerate(values):
             hps = v/healers['Duration']
@@ -129,7 +130,7 @@ class Recount(commands.Cog):
 
             name_text = ax.text(0, i - i*0.2, '  {}'.format(names[i]), color='white',
                     weight='heavy', va='center')
-            healing_text = ax.text(overhealing[-1] + values[-1], i - i*0.2, '{0:,} ({1:0.1f} , {2:0.1f}%)    OH: {3:,} {4:0.1f}%'.format(int(v), hps, percent, oh, 100*oh/(int(v)+oh)),
+            healing_text = ax.text(OH_placement, i - i*0.2, '{0:,} ({1:0.1f} , {2:0.1f}%)    OH: {3:,} {4:0.1f}%'.format(int(v), hps, percent, oh, 100*oh/(int(v)+oh)),
                     color='white', ha='right', va='center', weight='heavy')
 
             name_text.set_path_effects([path_effects.Stroke(linewidth=2, foreground='black'),
