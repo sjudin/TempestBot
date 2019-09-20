@@ -54,7 +54,8 @@ async def on_ready():
         client.admin_user = client.get_user(496028306232049694)
 
         await client.get_user(496028306232049694).send('TempestBot has started')
-    except (ExtensionNotLoaded):
+    except (commands.ExtensionNotLoaded, commands.ExtensionAlreadyLoaded) as e:
+        print(e)
         pass
 
 if __name__ == '__main__':
