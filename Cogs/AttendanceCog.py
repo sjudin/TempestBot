@@ -144,6 +144,7 @@ class Attendance(commands.Cog):
             await self.client.channel.send('Currently missing {} from these people:'.format(sheet_title))
             try:
                 await self.client.channel.send(', '.join([ r.mention for r in members]))
+                await self.client.channel.send('Link to sheet: https://docs.google.com/spreadsheets/d/1n3PlGK2lqQYJng2PTO9MBuiVnqzP8RigzzooCOiZHYw/')
             except(discord.HTTPException):
                 await self.client.channel.send('Error occured')
                 await self.client.channel.send(not_set_raiders)
