@@ -1,4 +1,5 @@
 import gspread
+import re
 from oauth2client.service_account import ServiceAccountCredentials
 
 def get_not_set_raiders():
@@ -17,8 +18,8 @@ def get_not_set_raiders():
     #
 
     # Find locations of mandatory raid signups
-    thur = sheet.find("Thursday")
-    sun = sheet.find("Sunday")
+    thur = sheet.find(re.compile("Thursday", re.IGNORECASE))
+    sun = sheet.find(re.compile("Sunday", re.IGNORECASE))
 
     all_raiders = [r for r in sheet.get_all_values()[2:-1] if '(Social)' not in r[0]]
 
